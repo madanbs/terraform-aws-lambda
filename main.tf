@@ -67,7 +67,7 @@ module "pipeline" {
         configuration = {
           ConnectionArn    = aws_codestarconnections_connection.github.arn
           FullRepositoryId = "madanbs/terraform-aws-lambda"
-          BranchName       = "dev"
+          BranchName       = "main"
         }
       }]
     },
@@ -126,7 +126,7 @@ module "build" {
       type      = "GITHUB"
       location  = "https://github.com/madanbs/terraform-aws-lambda.git"
       buildspec = "pipeline/app/buildspec/build.yaml"
-      version   = "dev"
+      version   = "main"
     }
   }
 }
@@ -149,7 +149,7 @@ module "deploy" {
       type      = "GITHUB"
       location  = "https://github.com/madanbs/terraform-aws-lambda.git"
       buildspec = "pipeline/app/buildspec/deploy.yaml"
-      version   = "dev"
+      version   = "main"
     }
   }
 }
