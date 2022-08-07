@@ -1,5 +1,5 @@
 ## Setup
-This is the example of terraform configuration file to create code pipeline workflow.
+This [link](https://github.com/madanbs/terraform-lambda-deployment/blob/main/main.tf) is the example of terraform configuration file to create code pipeline workflow.
 
 ### Terraform
 Run terraform:
