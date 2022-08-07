@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'sam template for deploying apis to lambda'
+Globals:
+  Api:
+    BinaryMediaTypes:
+      - application/pdf
+      - multipart/form-data
+      - application/vnd.ms-excel
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+  Function:
+    MemorySize: 1024
+    Timeout: 180
+Parameters:
+  SecurityGroupId:
+    Description: 'Required. The SecurityGroup name'
+    Type: String
+    Default: ''
+  SubnetId1:
+    Description: 'Required. The SubnetId 1'
+    Type: String
+    Default: ''
+  SubnetId2:
+    Description: 'Required. The SubnetId 2'
+    Type: String
+    Default: ''
+  SubnetId3:
+    Description: 'Required. The SubnetId 3'
+    Type: String
+    Default: ''
+  LayerSourceBucketName:
+    Description: 'Required. The Layer source bucket name'
+    Type: String
+    Default: ''
+  Role:
+    Description: 'Required. The Role name'
+    Type: String
+    Default: ''
+  Issuer:
+    Description: 'The issuer name of the authorizer'
+    Type: String
+    Default: ""
+  Audience:
+    Description: 'The client id of the authorizer'
+    Type: String
+    Default: ""
+Resources:
+  LamdaHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: Test
+      Auth:
+        Authorizers:
+          UserAuth:
+            IdentitySource: "$request.header.Authorization"
+            JwtConfiguration:
+              issuer: !Ref Issuer
+              audience:
+                - !Ref Audience
+        DefaultAuthorizer: UserAuth
+  LambdaApi:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      CodeUri: pipeline/app
+      Description: 'Lamda Function for deployment'
+      Tracing: Active
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: AllAtOnce
+      Events:
+        CompareAPI:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref LamdaHttpApi
+            Path: /name
+            Method: post
+      Layers:
+        - !Ref LambdaApiLayer
+        - !Sub "arn:aws:lambda:ap-southeast-1:{account_id}:layer:LambdaInsightsExtension:14"
+      Role: !Ref Role
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref SubnetId1
+          - !Ref SubnetId2
+          - !Ref SubnetId3
