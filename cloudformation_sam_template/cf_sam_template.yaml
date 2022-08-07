@@ -2,12 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: 'AWS::Serverless-2016-10-31'
 Description: 'sam template for deploying apis to lambda'
 Globals:
-  Api:
-    BinaryMediaTypes:
-      - application/pdf
-      - multipart/form-data
-      - application/vnd.ms-excel
-      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   Function:
     MemorySize: 1024
     Timeout: 180
